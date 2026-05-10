@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { hasServerConfig } from "@/lib/env";
+import { getEnv, hasServerConfig } from "@/lib/env";
 import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
 
 export async function GET() {
@@ -7,7 +7,7 @@ export async function GET() {
     return NextResponse.json({
       configured: false,
       supabaseUrlConfigured: Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL),
-      supabaseServiceRoleConfigured: Boolean(process.env.SUPABASE_SERVICE_ROLE_KEY),
+      supabaseServiceRoleConfigured: Boolean(getEnv("SUPABASE_SERVICE_ROLE_KEY")),
       openaiEnvConfigured: Boolean(process.env.OPENAI_API_KEY),
       hasStoredOpenAIKey: false,
       openaiModel: process.env.OPENAI_MODEL ?? "gpt-4.1-mini",
