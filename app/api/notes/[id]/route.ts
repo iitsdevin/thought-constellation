@@ -4,6 +4,7 @@ import { hasServerConfig } from "@/lib/env";
 import { enrichThought, generateEmbedding } from "@/lib/openai";
 import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
 import { vectorToSql } from "@/lib/vector";
+import { getAiSettings } from "@/lib/appSettings";
 
 type Params = Promise<{ id: string }>;
 
@@ -81,10 +82,12 @@ export async function PATCH(request: Request, context: { params: Params }) {
   };
 
   if (refreshAi) {
+    const aiSettings = await getAiSettings(supabase);
     const combined = [nextOriginal, nextExpansion].filter(Boolean).join("\n\nAdditional reflection:\n");
-    const enriched = await enrichThought(combined, current.ai_context ?? undefined);
+    const enriched = await enrichThought(combined, current.ai_context ?? undefined, aiSettings);
     const embedding = await generateEmbedding(
-      [combined, enriched.title, enriched.summary, enriched.expanded_context, enriched.themes.join(", ")].join("\n")
+      [combined, enriched.title, enriched.summary, enriched.expanded_context, enriched.themes.join(", ")].join("\n"),
+      aiSettings
     );
 
     Object.assign(updatePayload, {

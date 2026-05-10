@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
+import LogoutButton from "@/components/LogoutButton";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -21,6 +22,8 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
             <Link href="/notes">Notes</Link>
             <Link href="/categories">Categories</Link>
             <Link href="/constellation">Constellation</Link>
+            <Link href="/settings">Settings</Link>
+            <LogoutButton />
           </nav>
         </header>
         <main className="page-shell">{children}</main>

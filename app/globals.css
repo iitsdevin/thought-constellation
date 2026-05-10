@@ -85,9 +85,17 @@ input {
   padding: 0.55rem 0.8rem;
 }
 
-.nav-links a:hover {
+.nav-links a:hover,
+.nav-button:hover {
   background: var(--surface);
   color: var(--text);
+}
+
+.nav-button {
+  background: transparent;
+  border: 1px solid var(--line);
+  color: var(--muted);
+  padding: 0.55rem 0.8rem;
 }
 
 .page-shell {
@@ -277,6 +285,45 @@ button:disabled {
   border-radius: var(--radius-md);
   color: var(--danger);
   padding: 0.9rem;
+}
+
+.success {
+  background: #eff8ef;
+  border: 1px solid #bfdfbf;
+  border-radius: var(--radius-md);
+  color: #2f6532;
+  padding: 0.9rem;
+}
+
+.status-row {
+  align-items: center;
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  justify-content: space-between;
+  padding: 0.75rem 0;
+}
+
+.status-row:last-child {
+  border-bottom: 0;
+}
+
+.status-ready {
+  color: #2f6532;
+}
+
+.status-missing {
+  color: var(--danger);
+}
+
+.login-shell {
+  display: grid;
+  min-height: 68vh;
+  place-items: center;
+}
+
+.login-card {
+  max-width: 460px;
+  width: 100%;
 }
 
 .graph-shell {

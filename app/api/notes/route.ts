@@ -4,6 +4,7 @@ import { hasServerConfig } from "@/lib/env";
 import { enrichThought, generateEmbedding } from "@/lib/openai";
 import { vectorToSql } from "@/lib/vector";
 import { attachCategories, attachSemanticLinks, attachTags } from "@/lib/dbHelpers";
+import { getAiSettings } from "@/lib/appSettings";
 
 export async function GET() {
   if (!hasServerConfig()) {
@@ -42,9 +43,11 @@ export async function POST(request: Request) {
   }
 
   const supabase = getSupabaseAdmin();
-  const enriched = await enrichThought(content);
+  const aiSettings = await getAiSettings(supabase);
+  const enriched = await enrichThought(content, undefined, aiSettings);
   const embedding = await generateEmbedding(
-    [content, enriched.title, enriched.summary, enriched.expanded_context, enriched.themes.join(", ")].join("\n")
+    [content, enriched.title, enriched.summary, enriched.expanded_context, enriched.themes.join(", ")].join("\n"),
+    aiSettings
   );
 
   let matches: Array<{ id: string; title: string | null; similarity: number }> = [];

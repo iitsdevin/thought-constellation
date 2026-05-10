@@ -1,14 +1,19 @@
 import OpenAI from "openai";
 import type { EnrichedThought } from "@/types/models";
-import { hasOpenAIConfig } from "./env";
 
 const fallbackThemes = ["reflection", "emerging idea", "personal knowledge"];
 
-export function getOpenAIClient() {
-  if (!process.env.OPENAI_API_KEY) {
+export type OpenAIConfig = {
+  apiKey?: string;
+  model?: string;
+  embeddingModel?: string;
+};
+
+export function getOpenAIClient(apiKey = process.env.OPENAI_API_KEY) {
+  if (!apiKey) {
     throw new Error("Missing environment variable: OPENAI_API_KEY");
   }
-  return new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+  return new OpenAI({ apiKey });
 }
 
 export function fallbackEnrichment(content: string): EnrichedThought {
@@ -48,13 +53,17 @@ function safeJsonParse<T>(text: string, fallback: T): T {
   }
 }
 
-export async function enrichThought(content: string, existingContext?: string): Promise<EnrichedThought> {
-  if (!hasOpenAIConfig()) {
+export async function enrichThought(
+  content: string,
+  existingContext?: string,
+  config: OpenAIConfig = {}
+): Promise<EnrichedThought> {
+  if (!config.apiKey && !process.env.OPENAI_API_KEY) {
     return fallbackEnrichment(content);
   }
 
-  const client = getOpenAIClient();
-  const model = process.env.OPENAI_MODEL ?? "gpt-4.1-mini";
+  const client = getOpenAIClient(config.apiKey);
+  const model = config.model ?? process.env.OPENAI_MODEL ?? "gpt-4.1-mini";
   const fallback = fallbackEnrichment(content);
 
   const response = await client.responses.create({
@@ -106,13 +115,13 @@ export async function enrichThought(content: string, existingContext?: string): 
   return safeJsonParse<EnrichedThought>(response.output_text ?? "", fallback);
 }
 
-export async function generateEmbedding(input: string): Promise<number[] | null> {
-  if (!hasOpenAIConfig()) {
+export async function generateEmbedding(input: string, config: OpenAIConfig = {}): Promise<number[] | null> {
+  if (!config.apiKey && !process.env.OPENAI_API_KEY) {
     return null;
   }
 
-  const client = getOpenAIClient();
-  const model = process.env.OPENAI_EMBEDDING_MODEL ?? "text-embedding-3-small";
+  const client = getOpenAIClient(config.apiKey);
+  const model = config.embeddingModel ?? process.env.OPENAI_EMBEDDING_MODEL ?? "text-embedding-3-small";
   const response = await client.embeddings.create({ model, input });
   return response.data[0]?.embedding ?? null;
 }
@@ -121,13 +130,13 @@ export async function synthesiseCategory(input: {
   categoryName: string;
   categoryDescription?: string | null;
   notes: Array<{ title: string | null; summary: string | null; original_text: string }>;
-}): Promise<string> {
-  if (!hasOpenAIConfig()) {
+}, config: OpenAIConfig = {}): Promise<string> {
+  if (!config.apiKey && !process.env.OPENAI_API_KEY) {
     return "AI synthesis is not configured yet. Add OPENAI_API_KEY to generate a living category synthesis.";
   }
 
-  const client = getOpenAIClient();
-  const model = process.env.OPENAI_MODEL ?? "gpt-4.1-mini";
+  const client = getOpenAIClient(config.apiKey);
+  const model = config.model ?? process.env.OPENAI_MODEL ?? "gpt-4.1-mini";
   const response = await client.responses.create({
     model,
     input: [

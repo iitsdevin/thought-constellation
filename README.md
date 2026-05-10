@@ -22,7 +22,8 @@ To use it as the thought log described in the original brief, you must:
 
 1. Create a Supabase project and run `db/schema.sql`.
 2. Add the Supabase and OpenAI values from `.env.example` to `.env.local`.
-3. Run `npm run dev` and capture a thought from the homepage.
+3. Set `APP_PASSWORD` and `AUTH_SECRET` so the app is password protected.
+4. Run `npm run dev` and capture a thought from the homepage.
 
 The current MVP is intentionally private/single-user. Before sharing it with other users, add authentication, user-scoped database rows and Supabase row-level security.
 
@@ -67,12 +68,16 @@ Fill in:
 ```bash
 NEXT_PUBLIC_SUPABASE_URL=
 SUPABASE_SERVICE_ROLE_KEY=
+APP_PASSWORD=
+AUTH_SECRET=
 OPENAI_API_KEY=
 OPENAI_MODEL=gpt-4.1-mini
 OPENAI_EMBEDDING_MODEL=text-embedding-3-small
 ```
 
 Important: `SUPABASE_SERVICE_ROLE_KEY` must only be used server-side. This app keeps it inside API routes and never exposes it to client components.
+
+`OPENAI_API_KEY` can be added here or saved later from the in-app Settings page after Supabase is configured. Supabase values cannot be saved from inside the app because the server needs them before it can connect to the database.
 
 ### 4. Run the app
 

@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { hasServerConfig } from "@/lib/env";
 import { synthesiseCategory } from "@/lib/openai";
 import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
+import { getAiSettings } from "@/lib/appSettings";
 
 type Params = Promise<{ id: string }>;
 
@@ -29,11 +30,12 @@ export async function POST(_request: Request, context: { params: Params }) {
     .eq("category_id", id);
 
   const notes = (joinedNotes ?? []).map((row: any) => row.note).filter(Boolean);
+  const aiSettings = await getAiSettings(supabase);
   const synthesis = await synthesiseCategory({
     categoryName: category.name,
     categoryDescription: category.description,
     notes
-  });
+  }, aiSettings);
 
   const { data, error } = await supabase
     .from("categories")

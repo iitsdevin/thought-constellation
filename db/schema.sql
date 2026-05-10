@@ -41,6 +41,15 @@ create table if not exists tags (
   created_at timestamptz not null default now()
 );
 
+create table if not exists app_settings (
+  id boolean primary key default true check (id = true),
+  openai_api_key text,
+  openai_model text default 'gpt-4.1-mini',
+  openai_embedding_model text default 'text-embedding-3-small',
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
 create table if not exists note_categories (
   note_id uuid not null references notes(id) on delete cascade,
   category_id uuid not null references categories(id) on delete cascade,
@@ -83,6 +92,10 @@ for each row execute function set_updated_at();
 
 create trigger categories_set_updated_at
 before update on categories
+for each row execute function set_updated_at();
+
+create trigger app_settings_set_updated_at
+before update on app_settings
 for each row execute function set_updated_at();
 
 create or replace function match_notes(
