@@ -86,17 +86,33 @@ create index if not exists note_links_target_idx on note_links(target_note_id);
 create index if not exists note_categories_note_idx on note_categories(note_id);
 create index if not exists note_categories_category_idx on note_categories(category_id);
 
-create trigger notes_set_updated_at
-before update on notes
-for each row execute function set_updated_at();
+do $$
+begin
+  if to_regclass('public.notes') is not null and not exists (
+    select 1 from pg_trigger where tgname = 'notes_set_updated_at'
+  ) then
+    create trigger notes_set_updated_at
+    before update on notes
+    for each row execute function set_updated_at();
+  end if;
 
-create trigger categories_set_updated_at
-before update on categories
-for each row execute function set_updated_at();
+  if to_regclass('public.categories') is not null and not exists (
+    select 1 from pg_trigger where tgname = 'categories_set_updated_at'
+  ) then
+    create trigger categories_set_updated_at
+    before update on categories
+    for each row execute function set_updated_at();
+  end if;
 
-create trigger app_settings_set_updated_at
-before update on app_settings
-for each row execute function set_updated_at();
+  if to_regclass('public.app_settings') is not null and not exists (
+    select 1 from pg_trigger where tgname = 'app_settings_set_updated_at'
+  ) then
+    create trigger app_settings_set_updated_at
+    before update on app_settings
+    for each row execute function set_updated_at();
+  end if;
+end;
+$$;
 
 create or replace function match_notes(
   query_embedding vector(1536),
