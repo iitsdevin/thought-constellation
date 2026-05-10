@@ -1,0 +1,26 @@
+{
+  "name": "thought-constellation",
+  "version": "0.1.0",
+  "private": true,
+  "description": "A private thought log that enriches notes with AI context and connects them into constellations.",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "2.105.4",
+    "@xyflow/react": "12.10.2",
+    "next": "^16.2.6",
+    "openai": "6.37.0",
+    "react": "19.2.6",
+    "react-dom": "19.2.6"
+  },
+  "devDependencies": {
+    "@types/node": "25.6.2",
+    "@types/react": "19.2.14",
+    "@types/react-dom": "19.2.3",
+    "typescript": "6.0.3"
+  }
+}
